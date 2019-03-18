@@ -1,4 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <!DOCTYPE html>
 <html>
@@ -17,6 +19,36 @@
 </head>
 
 <body class="body">
+    <c:set var="movies" value="${movies}" />
+    <c:set var="rowsPerPage" value="2" />
+    <c:set var="pageNumber" value="${param.pageNumber}"/>
+    <c:set var="a">
+        <fmt:formatNumber value="${movies.size()/rowsPerPage}" maxFractionDigits="0"/>
+    </c:set>
+
+    <c:set var="b" value="${movies.size()/rowsPerPage}" />
+
+    <c:choose>
+        <c:when test="${a==0}">
+            <c:set var="numberOfPages" value="1"/>
+        </c:when>
+
+        <c:when test="${b>a}">
+            <c:set var="xxx" value="${b%a}"/>
+            <c:if test="${xxx>0}">
+                <c:set var="numberOfPages" value="${b-xxx+1}"/>
+            </c:if>
+        </c:when>
+
+        <c:when test="${a>=b}">
+            <c:set var="numberOfPages" value="${a}"/>
+        </c:when>
+    </c:choose>
+
+    <c:set var="start" value="${pageNumber*rowsPerPage-rowsPerPage}"/>
+    <c:set var="stop" value="${pageNumber*rowsPerPage-1}"/>
+
+
     <header style="background-image:url(&quot;assets/img/1.jpg&quot;);">
         <nav class="navbar navbar-default">
             <div class="container">
@@ -27,11 +59,13 @@
         </nav>
     </header>
     <ul class="nav nav-pills categories">
-        <li><a href="/MoviesChecklistEE_war_exploded/mymovies" data-bs-hover-animate="pulse">My Movies</a></li>
-        <li class="active"><a href="/MoviesChecklistEE_war_exploded/movieslibrary" data-bs-hover-animate="pulse">Library</a></li>
+        <li><a href="/MoviesChecklistEE_war_exploded/mymovies?pageNumber=1" data-bs-hover-animate="pulse">My Movies</a></li>
+        <li class="active"><a href="/MoviesChecklistEE_war_exploded/library?pageNumber=1" data-bs-hover-animate="pulse">Library</a></li>
         <li><a href="/MoviesChecklistEE_war_exploded/settings" data-bs-hover-animate="pulse">Settigns</a></li>
         <li><a href="/MoviesChecklistEE_war_exploded/logoff" data-bs-hover-animate="pulse">Log off</a></li>
-    </ul><c:forEach var="movie" items="${movies}">
+    </ul>
+
+    <c:forEach var="movie" items="${movies}" begin="${start}" end="${stop}">
         <div class="container post">
             <div class="row">
                 <div class="col-md-6 post-title" style="height:450px;">
@@ -42,13 +76,35 @@
                     <br>
                     <p><c:out value="${movie.getDescription()}"/></p>
                     <figure></figure>
-                    <button class="btn btn-default" type="button" data-bs-hover-animate="pulse" style="margin:0px;">REMOVE
+                    <button class="btn btn-default" type="button" data-bs-hover-animate="pulse" onclick="location.href = '/MoviesChecklistEE_war_exploded/addtomymovies?id=${movie.getId()}';" style="margin:0px;">ADD TO MY MOVIES
                     </button>
                 </div>
             </div>
         </div>
         <hr>
     </c:forEach>
+
+    <div class="row nav nav-pills categories">
+        <%--For displaying Previous link --%>
+        <c:if test="${pageNumber gt 1}">
+            <a href="library?pageNumber=${pageNumber - 1}">Previous</a>
+        </c:if>
+        <c:forEach begin="1" end="${numberOfPages}" var="i">
+            <c:choose>
+                <c:when test="${i!=pageNumber}">
+                    <a href="library?pageNumber=<c:out value="${i}"/>"><c:out value="${i}"/></a>
+                </c:when>
+                <c:otherwise>
+                    <c:out value="${i}"/>
+                </c:otherwise>
+            </c:choose>
+        </c:forEach>
+        <%--For displaying Next link --%>
+        <c:if test="${pageNumber lt numberOfPages}">
+            <a href="library?pageNumber=${pageNumber + 1}">Next</a>
+        </c:if>
+    </div>
+
     <footer>
         <h5>Bohdan Bondar © 2019</h5>
     </footer>
@@ -56,5 +112,4 @@
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-animation.js"></script>
 </body>
-
 </html>

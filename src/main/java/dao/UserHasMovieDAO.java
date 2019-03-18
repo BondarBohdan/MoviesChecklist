@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserHasMovieDAO {
 
-    void add(UserHasMovie userHasMovie);
+    void add(int userId, int movieId);
 
     List<UserHasMovie> getAll();
 
@@ -14,5 +14,5 @@ public interface UserHasMovieDAO {
 
     void update(UserHasMovie userHasMovie);
 
-    void remove(UserHasMovie userHasMovie);
+    void remove(int userId, int movieId);
 }

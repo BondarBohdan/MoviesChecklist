@@ -32,7 +32,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = req.getSession();
             session.setAttribute("userCredentials", userCredentialsDAO.getUserCredentials(login, password));
 
-            resp.sendRedirect("/MoviesChecklistEE_war_exploded/mymovies");
+            resp.sendRedirect("/MoviesChecklistEE_war_exploded/mymovies?pageNumber=1");
         } else {
             RequestDispatcher requestDispatcher = req.getRequestDispatcher("/login.html");
             requestDispatcher.forward(req, resp);

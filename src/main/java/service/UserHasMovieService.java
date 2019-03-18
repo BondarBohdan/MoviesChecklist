@@ -12,13 +12,13 @@ public class UserHasMovieService extends Util implements UserHasMovieDAO {
     Connection connection = getConnection();
 
     @Override
-    public void add(UserHasMovie userHasMovie) {
+    public void add(int userId, int movieId) {
         String sql = "INSERT INTO user_has_movie (user_id, movie_id) VALUES (?, ?)";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setInt(1, userHasMovie.getUserId());
-            preparedStatement.setInt(2, userHasMovie.getMovieId());
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, movieId);
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -89,13 +89,13 @@ public class UserHasMovieService extends Util implements UserHasMovieDAO {
     }
 
     @Override
-    public void remove(UserHasMovie userHasMovie) {
+    public void remove(int userId, int movieId) {
         String sql = "DELETE FROM user_has_movie WHERE user_id=? AND movie_id=?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setInt(1, userHasMovie.getUserId());
-            preparedStatement.setInt(2, userHasMovie.getMovieId());
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, movieId);
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {

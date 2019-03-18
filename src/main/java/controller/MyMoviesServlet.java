@@ -2,6 +2,7 @@ package controller;
 
 import dao.MovieDAO;
 import entity.Movie;
+import entity.User;
 import entity.UserCredentials;
 import service.MovieService;
 

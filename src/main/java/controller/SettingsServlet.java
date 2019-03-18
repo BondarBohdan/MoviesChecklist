@@ -46,7 +46,6 @@ public class SettingsServlet extends HttpServlet {
 
         userDAO.update(user);
 
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/settings.jsp");
-        requestDispatcher.forward(req, resp);
+        resp.sendRedirect("/MoviesChecklistEE_war_exploded/settings");
     }
 }

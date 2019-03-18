@@ -25,8 +25,8 @@
         </nav>
     </header>
     <ul class="nav nav-pills categories">
-        <li><a href="/MoviesChecklistEE_war_exploded/mymovies" data-bs-hover-animate="pulse">My Movies</a></li>
-        <li><a href="/MoviesChecklistEE_war_exploded/library" data-bs-hover-animate="pulse">Library</a></li>
+        <li><a href="/MoviesChecklistEE_war_exploded/mymovies?pageNumber=1" data-bs-hover-animate="pulse">My Movies</a></li>
+        <li><a href="/MoviesChecklistEE_war_exploded/library?pageNumber=1" data-bs-hover-animate="pulse">Library</a></li>
         <li><a href="/MoviesChecklistEE_war_exploded/settings" data-bs-hover-animate="pulse">Settigns</a></li>
         <li><a href="/MoviesChecklistEE_war_exploded/logoff" data-bs-hover-animate="pulse">Log off</a></li>
     </ul>
@@ -34,7 +34,7 @@
         <form method="post" action="/MoviesChecklistEE_war_exploded/register" style="background-color:rgb(255,255,255);color:rgb(80,94,108);">
             <h2 class="sr-only">Login Form</h2>
             <div class="illustration"><i class="icon ion-ios-locked-outline"></i></div>
-            <div class="form-group"><input class="form-control" type="email" name="login" required="" placeholder="Login (3-25 characters)" maxlength="25" minlength="3"></div>
+            <div class="form-group"><input class="form-control" type="text" name="login" required="" placeholder="Login (3-25 characters)" maxlength="25" minlength="3"></div>
             <div class="form-group"><input class="form-control" type="password" name="password" placeholder="Password (3-25 characters)" maxlength="25" minlength="3"></div>
             <div class="form-group"><button class="btn btn-primary btn-block bounce animated" type="submit" style="background-color:rgb(5,90,218);">Register</button></div>
         </form>
