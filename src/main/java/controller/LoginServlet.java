@@ -1,6 +1,9 @@
 package controller;
 
+import constant.PageURL;
+import constant.ServletURL;
 import dao.UserCredentialsDAO;
+import org.apache.commons.codec.digest.DigestUtils;
 import service.UserCredentialsService;
 
 import javax.servlet.RequestDispatcher;
@@ -14,27 +17,28 @@ import java.io.IOException;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-    UserCredentialsDAO userCredentialsDAO = new UserCredentialsService();
+    private UserCredentialsDAO userCredentialsDAO = new UserCredentialsService();
 
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/login.html");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher(PageURL.LOG_IN.getUrl());
         requestDispatcher.forward(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         String login = req.getParameter("login");
-        String password = req.getParameter("password");
+        String password = DigestUtils.md2Hex(req.getParameter("password"));
 
         if (existenceChecker(login, password)) {
             HttpSession session = req.getSession();
             session.setAttribute("userCredentials", userCredentialsDAO.getUserCredentials(login, password));
-
-            resp.sendRedirect("/MoviesChecklistEE_war_exploded/mymovies?pageNumber=1");
+            resp.sendRedirect(ServletURL.LIBRARY.getUrl());
         } else {
-            RequestDispatcher requestDispatcher = req.getRequestDispatcher("/login.html");
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher(PageURL.LOG_IN.getUrl());
             requestDispatcher.forward(req, resp);
         }
     }

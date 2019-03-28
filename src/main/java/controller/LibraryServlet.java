@@ -1,7 +1,9 @@
 package controller;
 
+import constant.PageURL;
 import dao.MovieDAO;
 import entity.Movie;
+import entity.UserCredentials;
 import service.MovieService;
 
 import javax.servlet.RequestDispatcher;
@@ -16,22 +18,31 @@ import java.util.List;
 
 @WebServlet("/library")
 public class LibraryServlet extends HttpServlet {
-    MovieDAO movieDAO = new MovieService();
+    private MovieDAO movieDAO = new MovieService();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        UserCredentials userCredentials = null;
+
+        List<Movie> movieList = movieDAO.getAll();
+
+        req.setAttribute("movies", movieList);
+
         HttpSession session = req.getSession();
+        if (session.getAttribute("userCredentials") != null) {
+            userCredentials = (UserCredentials) session.getAttribute("userCredentials");
 
-        if (session.getAttribute("userCredentials") == null) {
-            resp.sendRedirect("/MoviesChecklistEE_war_exploded/login");
-        } else {
-            List<Movie> movieList = movieDAO.getAll();
+            if (userCredentials.isAdmin()) {
+                RequestDispatcher requestDispatcher = req.getRequestDispatcher(PageURL.ADMIN_LIBRARY.getUrl());
+                requestDispatcher.forward(req, resp);
+                return;
+            }
 
-            req.setAttribute("movies", movieList);
-
-            RequestDispatcher requestDispatcher = req.getRequestDispatcher("/library.jsp");
-            requestDispatcher.forward(req, resp);
         }
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher(PageURL.LIBRARY.getUrl());
+        requestDispatcher.forward(req, resp);
+
     }
 }
 

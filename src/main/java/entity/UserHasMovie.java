@@ -5,6 +5,7 @@ import java.util.Objects;
 public class UserHasMovie {
     private int userId;
     private int movieId;
+    private boolean isWatched;
 
     public UserHasMovie() {
     }
@@ -28,6 +29,14 @@ public class UserHasMovie {
 
     public void setMovieId(int movieId) {
         this.movieId = movieId;
+    }
+
+    public boolean isWatched() {
+        return isWatched;
+    }
+
+    public void setWatched(boolean watched) {
+        isWatched = watched;
     }
 
     @Override

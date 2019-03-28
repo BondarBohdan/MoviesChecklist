@@ -1,14 +1,16 @@
 package service;
 
-import bl.Util;
+import connection.Connector;
 import dao.MovieDAO;
 import entity.Movie;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-public class MovieService extends Util implements MovieDAO {
+public class MovieService extends Connector implements MovieDAO {
 
     Connection connection = getConnection();
 
@@ -30,10 +32,10 @@ public class MovieService extends Util implements MovieDAO {
     }
 
     @Override
-    public List<Movie> getByUserId(int userId) {
-        List<Movie> movieList = new ArrayList<>();
+    public Map<Movie, Boolean> getByUserId(int userId) {
+        Map<Movie, Boolean> movieList = new LinkedHashMap<>();
 
-        String sql = "SELECT id, name, poster_url, description FROM movie JOIN user_has_movie ON movie.id = user_has_movie.movie_id WHERE user_id =?";
+        String sql = "SELECT id, name, poster_url, description, is_watched FROM movie JOIN user_has_movie ON movie.id = user_has_movie.movie_id WHERE user_id =?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setInt(1, userId);
@@ -45,8 +47,9 @@ public class MovieService extends Util implements MovieDAO {
                 movie.setName(resultSet.getString("name"));
                 movie.setPosterUrl(resultSet.getString("poster_url"));
                 movie.setDescription(resultSet.getString("description"));
+                Boolean isWatched = resultSet.getBoolean("is_watched");
 
-                movieList.add(movie);
+                movieList.put(movie, isWatched);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -58,7 +61,7 @@ public class MovieService extends Util implements MovieDAO {
     public List<Movie> getAll() {
         List<Movie> movieList = new ArrayList<>();
 
-        String sql = "SELECT id, name, poster_url, description FROM movie";
+        String sql = "SELECT id, name, poster_url, description FROM movie ORDER BY id DESC";
 
         try (Statement statement = connection.createStatement()){
             ResultSet resultSet = statement.executeQuery(sql);
@@ -80,20 +83,20 @@ public class MovieService extends Util implements MovieDAO {
 
     @Override
     public Movie getByMovieId(int id) {
-        String sql = "SELECT id, name, poster_url, description FROM MOVIE WHERE ID=?";
+        String sql = "SELECT * FROM MOVIE WHERE ID=?";
 
         Movie movie = new Movie();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
 
             movie.setId(resultSet.getInt("id"));
             movie.setName(resultSet.getString("name"));
             movie.setPosterUrl(resultSet.getString("poster_url"));
             movie.setDescription(resultSet.getString("description"));
 
-            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -119,12 +122,12 @@ public class MovieService extends Util implements MovieDAO {
     }
 
     @Override
-    public void remove(Movie movie) {
+    public void remove(int id) {
 
         String sql = "DELETE FROM movie WHERE id=?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, movie.getId());
+            preparedStatement.setInt(1, id);
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {

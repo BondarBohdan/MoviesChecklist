@@ -1,5 +1,7 @@
 package controller;
 
+import constant.PageURL;
+import constant.ServletURL;
 import dao.UserDAO;
 import entity.User;
 import entity.UserCredentials;
@@ -16,36 +18,33 @@ import java.io.IOException;
 
 @WebServlet("/settings")
 public class SettingsServlet extends HttpServlet {
-    HttpSession session;
-    UserDAO userDAO = new UserService();
-    UserCredentials userCredentials;
-    User user;
+    private HttpSession session;
+    private UserDAO userDAO = new UserService();
+    private UserCredentials userCredentials;
+    private User user;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         session = req.getSession();
-        if (session.getAttribute("userCredentials") != null) {
-            userCredentials = (UserCredentials) session.getAttribute("userCredentials");
-            user = userDAO.getById(userCredentials.getId());
+        userCredentials = (UserCredentials) session.getAttribute("userCredentials");
+        user = userDAO.getById(userCredentials.getId());
 
-            req.setAttribute("user", user);
+        req.setAttribute("user", user);
 
-            RequestDispatcher requestDispatcher = req.getRequestDispatcher("/settings.jsp");
-            requestDispatcher.forward(req, resp);
-
-        } else {
-            resp.sendRedirect("/MoviesChecklistEE_war_exploded/login");
-        }
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher(PageURL.SETTINGS.getUrl());
+        requestDispatcher.forward(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         user.setName(req.getParameter("name"));
         user.setSurname(req.getParameter("surname"));
         user.setEmail(req.getParameter("email"));
 
         userDAO.update(user);
 
-        resp.sendRedirect("/MoviesChecklistEE_war_exploded/settings");
+        resp.sendRedirect(ServletURL.SETTINGS.getUrl());
     }
 }

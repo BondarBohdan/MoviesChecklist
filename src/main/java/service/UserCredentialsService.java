@@ -1,6 +1,6 @@
 package service;
 
-import bl.Util;
+import connection.Connector;
 import dao.UserCredentialsDAO;
 import entity.UserCredentials;
 
@@ -8,17 +8,18 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserCredentialsService extends Util implements UserCredentialsDAO {
+public class UserCredentialsService extends Connector implements UserCredentialsDAO {
     Connection connection = getConnection();
 
     @Override
     public void add(UserCredentials userCredentials) {
-        String sql = "INSERT INTO user_credentials (login, password) VALUES (?, ?)";
+        String sql = "INSERT INTO user_credentials (login, password, is_admin) VALUES (?, ?, ?)";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, userCredentials.getLogin());
             preparedStatement.setString(2, userCredentials.getPassword());
+            preparedStatement.setBoolean(3, userCredentials.isAdmin());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -30,7 +31,7 @@ public class UserCredentialsService extends Util implements UserCredentialsDAO {
     public List<UserCredentials> getAll() {
         List<UserCredentials> userCredentialsList = new ArrayList<>();
 
-        String sql = "SELECT id, login, password FROM user_credentials";
+        String sql = "SELECT id, login, password, is_admin FROM user_credentials";
 
         try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
@@ -40,6 +41,7 @@ public class UserCredentialsService extends Util implements UserCredentialsDAO {
                 userCredentials.setId(resultSet.getInt("id"));
                 userCredentials.setLogin(resultSet.getString("login"));
                 userCredentials.setPassword(resultSet.getString("password"));
+                userCredentials.setAdmin(resultSet.getBoolean("is_admin"));
 
                 userCredentialsList.add(userCredentials);
             }
@@ -52,7 +54,7 @@ public class UserCredentialsService extends Util implements UserCredentialsDAO {
     @Override
     public UserCredentials getById(int id) {
 
-        String sql = "SELECT login, password FROM user_credentials WHERE id=?";
+        String sql = "SELECT login, password, is_admin FROM user_credentials WHERE id=?";
 
         UserCredentials userCredentials = new UserCredentials();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -63,6 +65,7 @@ public class UserCredentialsService extends Util implements UserCredentialsDAO {
             userCredentials.setId(resultSet.getInt("id"));
             userCredentials.setLogin(resultSet.getString("login"));
             userCredentials.setPassword(resultSet.getString("password"));
+            userCredentials.setAdmin(resultSet.getBoolean("is_admin"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -84,6 +87,7 @@ public class UserCredentialsService extends Util implements UserCredentialsDAO {
                 userCredentials.setId(resultSet.getInt("id"));
                 userCredentials.setLogin(resultSet.getString("login"));
                 userCredentials.setPassword(resultSet.getString("password"));
+                userCredentials.setAdmin(resultSet.getBoolean("is_admin"));
             } else {
                 return null;
             }
@@ -107,6 +111,7 @@ public class UserCredentialsService extends Util implements UserCredentialsDAO {
                 userCredentials.setId(resultSet.getInt("id"));
                 userCredentials.setLogin(resultSet.getString("login"));
                 userCredentials.setPassword(resultSet.getString("password"));
+                userCredentials.setAdmin(resultSet.getBoolean("is_admin"));
             } else {
                 return null;
             }
@@ -118,12 +123,13 @@ public class UserCredentialsService extends Util implements UserCredentialsDAO {
 
     @Override
     public void updatePassword(UserCredentials userCredentials) {
-        String sql = "UPDATE user_credentials SET password=? WHERE id=?";
+        String sql = "UPDATE user_credentials SET password=?, is_admin=? WHERE id=?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
 
             preparedStatement.setString(1, userCredentials.getPassword());
             preparedStatement.setInt(2, userCredentials.getId());
+            preparedStatement.setBoolean(3, userCredentials.isAdmin());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {

@@ -1,4 +1,4 @@
-package bl;
+package connection;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,7 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class Util {
+public class Connector {
 
     private static final String DB_DRIVER = getPropertyValue("db.driver");
     private static final String DB_URL = getPropertyValue("db.host");
@@ -19,7 +19,8 @@ public class Util {
         Connection connection = null;
         try {
             Class.forName(DB_DRIVER);
-            connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            connection = DriverManager.getConnection(DB_URL, DB_USERNAME,
+                    DB_PASSWORD);
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }

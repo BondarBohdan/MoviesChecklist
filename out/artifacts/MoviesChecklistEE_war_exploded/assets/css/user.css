@@ -105,6 +105,10 @@ nav.navbar.navbar-default {
   }
 }
 
+.line-through {
+    text-decoration: line-through;
+}
+
 .post-title .author {
   text-transform:uppercase;
 }
@@ -145,4 +149,3 @@ footer h5 {
 div.container.post {
   margin-bottom:50px;
 }
-

@@ -7,6 +7,7 @@ public class UserCredentials {
     private int id;
     private String login;
     private String password;
+    private boolean isAdmin;
 
     public UserCredentials() {
     }
@@ -16,10 +17,17 @@ public class UserCredentials {
         this.password = password;
     }
 
-    public UserCredentials(int id, String login, String password) {
+    public UserCredentials(String login, String password, boolean isAdmin) {
+        this.login = login;
+        this.password = password;
+        this.isAdmin = isAdmin;
+    }
+
+    public UserCredentials(int id, String login, String password, boolean isAdmin) {
         this.id = id;
         this.login = login;
         this.password = password;
+        this.isAdmin = isAdmin;
     }
 
     public int getId() {
@@ -44,6 +52,14 @@ public class UserCredentials {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 
     @Override

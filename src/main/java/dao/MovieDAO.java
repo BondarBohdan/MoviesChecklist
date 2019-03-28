@@ -4,6 +4,7 @@ import entity.Movie;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 public interface MovieDAO {
 
@@ -13,9 +14,9 @@ public interface MovieDAO {
 
     Movie getByMovieId(int id);
 
-    List<Movie> getByUserId(int userId);
+    Map<Movie, Boolean> getByUserId(int userId);
 
     void update(Movie movie);
 
-    void remove(Movie movie);
+    void remove(int id);
 }

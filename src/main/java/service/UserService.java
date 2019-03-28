@@ -1,6 +1,6 @@
 package service;
 
-import bl.Util;
+import connection.Connector;
 import dao.UserDAO;
 import entity.User;
 
@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserService extends Util implements UserDAO {
+public class UserService extends Connector implements UserDAO {
     Connection connection = getConnection();
 
     @Override

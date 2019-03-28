@@ -12,7 +12,9 @@ public interface UserHasMovieDAO {
 
     List<UserHasMovie> getByUserId(int userId);
 
-    void update(UserHasMovie userHasMovie);
+    void update(int userId, int movieId, boolean isWatched);
 
     void remove(int userId, int movieId);
+
+    boolean existenceChecker(int userId, int movieId);
 }

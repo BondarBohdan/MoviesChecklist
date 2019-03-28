@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page import="constant.ServletURL" %>
 
 <!DOCTYPE html>
 <html>
@@ -19,97 +19,88 @@
 </head>
 
 <body class="body">
-    <c:set var="movies" value="${movies}" />
-    <c:set var="rowsPerPage" value="2" />
-    <c:set var="pageNumber" value="${param.pageNumber}"/>
-    <c:set var="a">
-        <fmt:formatNumber value="${movies.size()/rowsPerPage}" maxFractionDigits="0"/>
-    </c:set>
+<c:set var="movies" value="${movies}"/>
+<c:set var="totalCount" value="${movies.size()}"/>
+<c:set var="perPage" value="${5}"/>
+<c:set var="pageStart" value="${param.start}"/>
+<c:if test="${empty pageStart or pageStart < 0}">
+    <c:set var="pageStart" value="0"/>
+</c:if>
+<c:if test="${totalCount < pageStart}">
+    <c:set var="pageStart" value="${pageStart - perPage}"/>
+</c:if>
 
-    <c:set var="b" value="${movies.size()/rowsPerPage}" />
+<c:set var="logText" value="Log out"/>
+<c:set var="settingsText" value="${sessionScope.userCredentials.getLogin()}"/>
+<c:if test="${empty settingsText}">
+    <c:set var="settingsText" value="Settings"/>
+    <c:set var="logText" value="Log in"/>
+</c:if>
 
-    <c:choose>
-        <c:when test="${a==0}">
-            <c:set var="numberOfPages" value="1"/>
-        </c:when>
-
-        <c:when test="${b>a}">
-            <c:set var="xxx" value="${b%a}"/>
-            <c:if test="${xxx>0}">
-                <c:set var="numberOfPages" value="${b-xxx+1}"/>
-            </c:if>
-        </c:when>
-
-        <c:when test="${a>=b}">
-            <c:set var="numberOfPages" value="${a}"/>
-        </c:when>
-    </c:choose>
-
-    <c:set var="start" value="${pageNumber*rowsPerPage-rowsPerPage}"/>
-    <c:set var="stop" value="${pageNumber*rowsPerPage-1}"/>
-
-
-    <header style="background-image:url(&quot;assets/img/1.jpg&quot;);">
-        <nav class="navbar navbar-default">
-            <div class="container">
-                <div class="navbar-header"><a class="navbar-brand" href="#"><i class="glyphicon glyphicon-play"></i><span class="text-title">Movies checklist&nbsp;</span></a><button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
-                <div
-                    class="collapse navbar-collapse" id="navcol-1"></div>
+<header style="background-image:url(&quot;assets/img/1.jpg&quot;);">
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header"><a class="navbar-brand" href="#"><i class="glyphicon glyphicon-play"
+                                                                           style="font-size: 125px"></i><span
+                    class="text-title" style="font-size: 35px;">Movies checklist&nbsp;</span></a>
+                <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navcol-1"><span
+                        class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span
+                        class="icon-bar"></span><span class="icon-bar"></span></button>
             </div>
-        </nav>
-    </header>
-    <ul class="nav nav-pills categories">
-        <li><a href="/MoviesChecklistEE_war_exploded/mymovies?pageNumber=1" data-bs-hover-animate="pulse">My Movies</a></li>
-        <li class="active"><a href="/MoviesChecklistEE_war_exploded/library?pageNumber=1" data-bs-hover-animate="pulse">Library</a></li>
-        <li><a href="/MoviesChecklistEE_war_exploded/settings" data-bs-hover-animate="pulse">Settigns</a></li>
-        <li><a href="/MoviesChecklistEE_war_exploded/logoff" data-bs-hover-animate="pulse">Log off</a></li>
-    </ul>
+            <div
+                    class="collapse navbar-collapse" id="navcol-1"></div>
+        </div>
+    </nav>
+</header>
+<ul class="nav nav-pills categories" style="font-size:25px;">
+    <li><a href="${ServletURL.MY_MOVIES.getUrl()}" data-bs-hover-animate="pulse">My Movies</a></li>
+    <li class="active"><a href="${ServletURL.LIBRARY.getUrl()}" data-bs-hover-animate="pulse">Library</a></li>
+    <li><a href="${ServletURL.SETTINGS.getUrl()}" data-bs-hover-animate="pulse"><c:out value="${settingsText}"/></a>
+</li>
+    <li><a href="${ServletURL.LOG_OUT.getUrl()}" data-bs-hover-animate="pulse"><c:out value="${logText}"/></a></li>
+</ul>
 
-    <c:forEach var="movie" items="${movies}" begin="${start}" end="${stop}">
-        <div class="container post">
-            <div class="row">
-                <div class="col-md-6 post-title" style="height:450px;">
-                    <h1><c:out value="${movie.getName()}"/></h1><img class="img-thumbnail"
-                                                                     src="<c:out value="${movie.getPosterUrl()}"/>"></div>
-                <div class="col-md-6 col-md-offset-0 post-body" style="height:420px;">
-                    <br>
-                    <br>
-                    <p><c:out value="${movie.getDescription()}"/></p>
-                    <figure></figure>
-                    <button class="btn btn-default" type="button" data-bs-hover-animate="pulse" onclick="location.href = '/MoviesChecklistEE_war_exploded/addtomymovies?id=${movie.getId()}';" style="margin:0px;">ADD TO MY MOVIES
-                    </button>
-                </div>
+<c:forEach var="movie" items="${movies}" begin="${pageStart}" end="${pageStart + perPage - 1}">
+    <div class="container post">
+        <div class="row">
+            <div class="col-md-6 post-title" style="height:450px;">
+                <h1><c:out value="${movie.getName()}"/></h1><img class="img-thumbnail"
+                                                                 src="<c:out value="${movie.getPosterUrl()}"/>"></div>
+            <div class="col-md-6 col-md-offset-0 post-body" style="height:420px;">
+                <br>
+                <br>
+                <p><c:out value="${movie.getDescription()}"/></p>
+                <figure></figure>
+                <button class="btn btn-default" type="button" data-bs-hover-animate="pulse"
+                        onclick="location.href = '${ServletURL.ADD_TO_MY_MOVIES.getUrl()}?id=${movie.getId()}&start=${pageStart}';"
+                        style="margin:0px;">ADD TO MY MOVIES
+                </button>
             </div>
         </div>
-        <hr>
-    </c:forEach>
-
-    <div class="row nav nav-pills categories">
-        <%--For displaying Previous link --%>
-        <c:if test="${pageNumber gt 1}">
-            <a href="library?pageNumber=${pageNumber - 1}">Previous</a>
-        </c:if>
-        <c:forEach begin="1" end="${numberOfPages}" var="i">
-            <c:choose>
-                <c:when test="${i!=pageNumber}">
-                    <a href="library?pageNumber=<c:out value="${i}"/>"><c:out value="${i}"/></a>
-                </c:when>
-                <c:otherwise>
-                    <c:out value="${i}"/>
-                </c:otherwise>
-            </c:choose>
-        </c:forEach>
-        <%--For displaying Next link --%>
-        <c:if test="${pageNumber lt numberOfPages}">
-            <a href="library?pageNumber=${pageNumber + 1}">Next</a>
-        </c:if>
     </div>
+    <hr>
+</c:forEach>
 
-    <footer>
-        <h5>Bohdan Bondar © 2019</h5>
-    </footer>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/bs-animation.js"></script>
+
+<div class="row nav nav-pills categories">
+    <div class="col-md-12">
+        <nav>
+            <ul class="pagination">
+                <li><a aria-label="Previous" href="?start=${pageStart - perPage}"><span
+                        aria-hidden="true"><< Previous</span></a></li>
+                <li><span>${pageStart + 1} - ${pageStart + perPage}</span></li>
+                <li><a aria-label="Next" href="?start=${pageStart + perPage}"><span
+                        aria-hidden="true">Next >></span></a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<footer>
+    <h5>Bohdan Bondar © 2019</h5>
+</footer>
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="assets/js/bs-animation.js"></script>
 </body>
 </html>

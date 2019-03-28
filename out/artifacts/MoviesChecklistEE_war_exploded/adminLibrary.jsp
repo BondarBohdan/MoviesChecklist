@@ -56,9 +56,16 @@
     <li><a href="${ServletURL.MY_MOVIES.getUrl()}" data-bs-hover-animate="pulse">My Movies</a></li>
     <li class="active"><a href="${ServletURL.LIBRARY.getUrl()}" data-bs-hover-animate="pulse">Library</a></li>
     <li><a href="${ServletURL.SETTINGS.getUrl()}" data-bs-hover-animate="pulse"><c:out value="${settingsText}"/></a>
-</li>
+    </li>
     <li><a href="${ServletURL.LOG_OUT.getUrl()}" data-bs-hover-animate="pulse"><c:out value="${logText}"/></a></li>
 </ul>
+
+<div class="container">
+    <button class="btn btn-default center-block" type="button" data-bs-hover-animate="pulse"
+            onclick="location.href = '${ServletURL.ADD_NEW_MOVIE.getUrl()}';"
+            style="background-color:rgb(174,255,146);font-size:25px;">ADD NEW MOVIE
+    </button>
+</div>
 
 <c:forEach var="movie" items="${movies}" begin="${pageStart}" end="${pageStart + perPage - 1}">
     <div class="container post">
@@ -73,14 +80,20 @@
                 <figure></figure>
                 <button class="btn btn-default" type="button" data-bs-hover-animate="pulse"
                         onclick="location.href = '${ServletURL.ADD_TO_MY_MOVIES.getUrl()}?id=${movie.getId()}&start=${pageStart}';"
-                        style="margin:0px;">ADD TO MY MOVIES
+                        style="margin:0px;">ADD TO MY
+                    MOVIES
                 </button>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-default" type="button" data-bs-hover-animate="pulse"
+                            onclick="location.href = '${ServletURL.EDIT_MOVIE.getUrl()}?id=${movie.getId()}&start=${pageStart}';" style="background-color:rgb(231,252,101);">EDIT</button>
+                    <button class="btn btn-default" type="button" data-bs-hover-animate="pulse"
+                            onclick="location.href = '${ServletURL.DELETE.getUrl()}?id=${movie.getId()}&start=${pageStart}';" style="background-color:rgb(247,141,141);">DELETE</button>
+                </div>
             </div>
         </div>
     </div>
     <hr>
 </c:forEach>
-
 
 <div class="row nav nav-pills categories">
     <div class="col-md-12">

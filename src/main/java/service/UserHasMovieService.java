@@ -1,6 +1,6 @@
 package service;
 
-import bl.Util;
+import connection.Connector;
 import dao.UserHasMovieDAO;
 import entity.UserHasMovie;
 
@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserHasMovieService extends Util implements UserHasMovieDAO {
+public class UserHasMovieService extends Connector implements UserHasMovieDAO {
     Connection connection = getConnection();
 
     @Override
@@ -49,6 +49,25 @@ public class UserHasMovieService extends Util implements UserHasMovieDAO {
     }
 
     @Override
+    public boolean existenceChecker(int userId, int movieId) {
+        String sql = "SELECT * FROM user_has_movie WHERE user_id=? and movie_id=?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, movieId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
     public List<UserHasMovie> getByUserId(int userId) {
         List<UserHasMovie> userHasMovieList = new ArrayList<>();
 
@@ -74,13 +93,14 @@ public class UserHasMovieService extends Util implements UserHasMovieDAO {
     }
 
     @Override
-    public void update(UserHasMovie userHasMovie) {
-        String sql = "UPDATE user_has_movie WHERE user_id=? AND movie_id=?";
+    public void update(int userId, int movieId, boolean isWatched) {
+        String sql = "UPDATE user_has_movie SET is_watched=? WHERE user_id=? AND movie_id=?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setInt(1, userHasMovie.getUserId());
-            preparedStatement.setInt(2, userHasMovie.getMovieId());
+            preparedStatement.setBoolean(1, isWatched);
+            preparedStatement.setInt(2, userId);
+            preparedStatement.setInt(3, movieId);
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
